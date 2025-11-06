@@ -621,12 +621,26 @@
             const dots = document.querySelectorAll('.dot');
 
             
+            // book.addEventListener('click', function (e) {
+            //     // Solo abrir/cerrar el libro si se hace clic en la portada
+            //     if (!this.classList.contains('opened') && e.target.closest('.cover')) {
+            //         this.classList.add('opened');
+            //         createHearts();
+            //         startColorTransition();
+            //     }
+            // });
+
+
+            // Reproducir música cuando se abre el libro
+            const musica = document.getElementById('musica');
             book.addEventListener('click', function (e) {
-                // Solo abrir/cerrar el libro si se hace clic en la portada
                 if (!this.classList.contains('opened') && e.target.closest('.cover')) {
                     this.classList.add('opened');
                     createHearts();
                     startColorTransition();
+
+                    // Intentar reproducir música
+                    musica.play().catch(err => console.log('Autoplay bloqueado hasta interacción:', err));
                 }
             });
 
