@@ -28,7 +28,6 @@
             position: relative;
         }
 
-        /* Capas para el efecto de transición suave */
         .bg-layer {
             position: absolute;
             top: 0;
@@ -526,20 +525,19 @@
                 }
             }
 
-            // Iniciar cambio de colores cuando se abre el libro
             function startColorTransition() {
-                // Configurar intervalo para cambiar colores cada 4 segundos
+                
                 colorInterval = setInterval(changeBackgroundColor, 4000);
             }
 
-            // Detener cambio de colores
+            
             function stopColorTransition() {
                 if (colorInterval) {
                     clearInterval(colorInterval);
                 }
             }
 
-            // Definir el contenido de las tarjetas
+            
             const cardContents = [
                 {
                     content: `
@@ -606,7 +604,7 @@
 
                 cardsContainer.appendChild(card);
 
-                // Crear puntos de progreso
+                
                 const dot = document.createElement('div');
                 dot.className = 'dot';
                 if (index === 0) dot.classList.add('active');
@@ -622,7 +620,7 @@
             const cards = document.querySelectorAll('.card');
             const dots = document.querySelectorAll('.dot');
 
-            // Abrir libro al hacer clic
+            
             book.addEventListener('click', function (e) {
                 // Solo abrir/cerrar el libro si se hace clic en la portada
                 if (!this.classList.contains('opened') && e.target.closest('.cover')) {
@@ -632,7 +630,7 @@
                 }
             });
 
-            // Navegación entre tarjetas
+           
             nextBtn.addEventListener('click', showNextCard);
             prevBtn.addEventListener('click', showPrevCard);
 
@@ -649,14 +647,14 @@
             }
 
             function goToCard(index) {
-                // Remover clase activa de la tarjeta actual
+                
                 cards[currentCardIndex].classList.remove('active');
                 dots[currentCardIndex].classList.remove('active');
 
-                // Actualizar índice
+                
                 currentCardIndex = index;
 
-                // Aplicar clase activa a la nueva tarjeta
+               
                 cards[currentCardIndex].classList.add('active');
                 dots[currentCardIndex].classList.add('active');
 
@@ -668,12 +666,12 @@
                 nextBtn.disabled = currentCardIndex === cards.length - 1;
             }
 
-            // Crear corazones flotantes
+            
             function createHearts() {
-                // Limpiar corazones existentes
+                
                 heartsContainer.innerHTML = '';
 
-                // Crear nuevos corazones
+               
                 for (let i = 0; i < 15; i++) {
                     const heart = document.createElement('div');
                     heart.className = 'heart';
@@ -686,10 +684,10 @@
                 }
             }
 
-            // Inicializar botones de navegación
+            
             updateNavigationButtons();
 
-            // Inicializar capas de fondo
+           
             bgLayer1.style.background = `linear-gradient(135deg, ${colorPalette[0].start} 0%, ${colorPalette[0].end} 100%)`;
         });
     </script>
