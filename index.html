@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invitación Especial - Melissa</title>
+    <title> ♡ For You ♡</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -428,7 +428,7 @@
 </head>
 
 <body>
-    <!-- Capas de fondo para transición suave -->
+    
     <div class="bg-layer active" id="bgLayer1"></div>
     <div class="bg-layer inactive" id="bgLayer2"></div>
 
@@ -438,12 +438,12 @@
                 <div class="book-spine"></div>
                 <h1 class="cover-title">Para Ti</h1>
                 <p class="cover-subtitle">Una invitación especial</p>
-                <div class="rose-icon">🌹</div>
+                <div class="rose-icon">❤</div>
                 <p class="instruction">Toca para abrir</p>
             </div>
             <div class="inside-page">
                 <div class="cards-container" id="cardsContainer">
-                    <!-- Las tarjetas se generarán dinámicamente con JavaScript -->
+                    
                 </div>
 
                 <div class="navigation">
@@ -456,7 +456,7 @@
                 </div>
 
                 <div class="progress-dots" id="progressDots">
-                    <!-- Los puntos de progreso se generarán dinámicamente -->
+                    
                 </div>
             </div>
         </div>
@@ -501,7 +501,6 @@
                 const color = colorPalette[randomIndex];
 
                 if (currentLayer === 1) {
-                    // Cambiar capa 2 y hacerla activa
                     bgLayer2.style.background = `linear-gradient(135deg, ${color.start} 0%, ${color.end} 100%)`;
                     bgLayer2.classList.remove('inactive');
                     bgLayer2.classList.add('active');
