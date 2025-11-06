@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitación Especial - Melissa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #ffe6e6 0%, #ffcccc 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+            overflow: hidden;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Capas para el efecto de transición suave */
+        .bg-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: opacity 3s ease-in-out;
+            z-index: -1;
+        }
+
+        .bg-layer.active {
+            opacity: 1;
+        }
+
+        .bg-layer.inactive {
+            opacity: 0;
+        }
+
+        .book-container {
+            perspective: 1500px;
+            width: 100%;
+            max-width: 800px;
+            height: 600px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .book {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            border-radius: 5px 15px 15px 5px;
+        }
+
+        .book.opened {
+            transform: rotateY(-180deg);
+        }
+
+        .cover,
+        .inside-page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 5px 15px 15px 5px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .cover {
+            background: linear-gradient(135deg, #8b0000 0%, #a52a2a 100%);
+            color: #fff;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .cover::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path fill="none" stroke="%23ffffff" stroke-width="0.5" d="M20,20 Q40,10 60,20 T100,20 M20,40 Q40,30 60,40 T100,40 M20,60 Q40,50 60,60 T100,60 M20,80 Q40,70 60,80 T100,80"/></svg>');
+            opacity: 0.1;
+        }
+
+        .cover-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .cover-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .rose-icon {
+            font-size: 3rem;
+            margin: 20px 0;
+            animation: pulse 2s infinite;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .instruction {
+            margin-top: 30px;
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+            animation: fadeInOut 3s infinite;
+        }
+
+        @keyframes fadeInOut {
+            0% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.6;
+            }
+        }
+
+        .inside-page {
+            background: #fff;
+            color: #333;
+            transform: rotateY(180deg);
+            text-align: center;
+            padding: 30px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .cards-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card {
+            position: absolute;
+            width: 90%;
+            height: 85%;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            transition: transform 0.8s ease, opacity 0.8s ease;
+            opacity: 0;
+            transform: translateX(100%) scale(0.9);
+            z-index: 1;
+        }
+
+        .card.active {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+            z-index: 2;
+        }
+
+        .card.previous {
+            opacity: 0.3;
+            transform: translateX(-100%) scale(0.9);
+            z-index: 1;
+        }
+
+        .card-content {
+            max-width: 600px;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            text-align: left;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .salutation {
+            font-weight: bold;
+            color: #8b0000;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            text-align: center;
+        }
+
+        .heartfelt {
+            margin: 25px 0;
+            padding-left: 20px;
+            border-left: 3px solid #8b0000;
+            font-style: italic;
+        }
+
+        .highlight {
+            color: #8b0000;
+            font-weight: bold;
+        }
+
+        .invitation-details {
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(139, 0, 0, 0.05);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .date-time {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #8b0000;
+            margin-bottom: 10px;
+        }
+
+        .location {
+            font-size: 1.1rem;
+        }
+
+        .closing {
+            margin-top: 30px;
+            text-align: right;
+        }
+
+        .signature {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.8rem;
+            color: #8b0000;
+            margin-top: 10px;
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 30px;
+            z-index: 3;
+        }
+
+        .nav-btn {
+            background: #8b0000;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: #a52a2a;
+            transform: scale(1.1);
+        }
+
+        .nav-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        .progress-dots {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ddd;
+            transition: background 0.3s ease;
+            cursor: pointer;
+        }
+
+        .dot.active {
+            background: #8b0000;
+        }
+
+        .floating-hearts {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 1.5rem;
+            opacity: 0;
+            animation: floatHearts 8s linear infinite;
+        }
+
+        @keyframes floatHearts {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.7;
+            }
+
+            90% {
+                opacity: 0.7;
+            }
+
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .book-spine {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 30px;
+            height: 100%;
+            background: linear-gradient(to right, #600 0%, #8b0000 50%, #600 100%);
+            border-radius: 5px 0 0 5px;
+            box-shadow: inset -5px 0 10px rgba(0, 0, 0, 0.3);
+            z-index: 3;
+        }
+
+        .book-spine::after {
+            content: 'Melissa Castañon';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-90deg);
+            color: #fff;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 768px) {
+            .book-container {
+                height: 500px;
+            }
+
+            .cover-title {
+                font-size: 2rem;
+            }
+
+            .card-content {
+                font-size: 1rem;
+            }
+
+            .inside-page {
+                padding: 15px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .nav-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Dancing+Script:wght@400;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Capas de fondo para transición suave -->
+    <div class="bg-layer active" id="bgLayer1"></div>
+    <div class="bg-layer inactive" id="bgLayer2"></div>
+
+    <div class="book-container">
+        <div class="book">
+            <div class="cover">
+                <div class="book-spine"></div>
+                <h1 class="cover-title">Para Ti</h1>
+                <p class="cover-subtitle">Una invitación especial</p>
+                <div class="rose-icon">🌹</div>
+                <p class="instruction">Toca para abrir</p>
+            </div>
+            <div class="inside-page">
+                <div class="cards-container" id="cardsContainer">
+                    <!-- Las tarjetas se generarán dinámicamente con JavaScript -->
+                </div>
+
+                <div class="navigation">
+                    <button class="nav-btn" id="prevBtn" disabled>
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="nav-btn" id="nextBtn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div class="progress-dots" id="progressDots">
+                    <!-- Los puntos de progreso se generarán dinámicamente -->
+                </div>
+            </div>
+        </div>
+
+        <div class="floating-hearts" id="heartsContainer"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const book = document.querySelector('.book');
+            const heartsContainer = document.getElementById('heartsContainer');
+            const cardsContainer = document.getElementById('cardsContainer');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const progressDots = document.getElementById('progressDots');
+            const bgLayer1 = document.getElementById('bgLayer1');
+            const bgLayer2 = document.getElementById('bgLayer2');
+
+            let currentCardIndex = 0;
+            let colorInterval;
+            let currentLayer = 1;
+
+            // Paleta de colores rojitos claros
+            const colorPalette = [
+                { start: '#ffe6e6', end: '#ffcccc' },     // Rosa muy claro
+                { start: '#ffdbdb', end: '#ffc2c2' },     // Rosa claro suave
+                { start: '#ffd1d1', end: '#ffb8b8' },     // Rosa claro medio
+                { start: '#ffc7c7', end: '#ffafaf' },     // Rosa claro cálido
+                { start: '#ffbdbd', end: '#ffa5a5' },     // Rosa claro intenso
+                { start: '#ffb3b3', end: '#ff9c9c' },     // Rosa rojizo claro
+                { start: '#ffa8a8', end: '#ff9292' },     // Rojo claro suave
+                { start: '#ff9e9e', end: '#ff8989' },     // Rojo claro medio
+                { start: '#ff9494', end: '#ff7f7f' },     // Rojo claro cálido
+                { start: '#ff8a8a', end: '#ff7676' },     // Rojo claro intenso
+                { start: '#ff8080', end: '#ff6c6c' },     // Rojo suave
+                { start: '#ffcccc', end: '#ffb3b3' }      // Rosa pastel
+            ];
+
+            // Función para cambiar el color de fondo con transición suave
+            function changeBackgroundColor() {
+                const randomIndex = Math.floor(Math.random() * colorPalette.length);
+                const color = colorPalette[randomIndex];
+
+                if (currentLayer === 1) {
+                    // Cambiar capa 2 y hacerla activa
+                    bgLayer2.style.background = `linear-gradient(135deg, ${color.start} 0%, ${color.end} 100%)`;
+                    bgLayer2.classList.remove('inactive');
+                    bgLayer2.classList.add('active');
+
+                    // Ocultar capa 1
+                    bgLayer1.classList.remove('active');
+                    bgLayer1.classList.add('inactive');
+
+                    currentLayer = 2;
+                } else {
+                    // Cambiar capa 1 y hacerla activa
+                    bgLayer1.style.background = `linear-gradient(135deg, ${color.start} 0%, ${color.end} 100%)`;
+                    bgLayer1.classList.remove('inactive');
+                    bgLayer1.classList.add('active');
+
+                    // Ocultar capa 2
+                    bgLayer2.classList.remove('active');
+                    bgLayer2.classList.add('inactive');
+
+                    currentLayer = 1;
+                }
+            }
+
+            // Iniciar cambio de colores cuando se abre el libro
+            function startColorTransition() {
+                // Configurar intervalo para cambiar colores cada 4 segundos
+                colorInterval = setInterval(changeBackgroundColor, 4000);
+            }
+
+            // Detener cambio de colores
+            function stopColorTransition() {
+                if (colorInterval) {
+                    clearInterval(colorInterval);
+                }
+            }
+
+            // Definir el contenido de las tarjetas
+            const cardContents = [
+                {
+                    content: `
+                        <p class="salutation">¡Buenos días, Ingeniero de mi corazón y sentimientos!</p>
+                        
+                        <p>Mi corazón rebosa de alegría al saber que te encuentras bien. No imaginas cuánto anhelo volver a ver tus ojos y compartir nuevamente una conversación contigo; espero que ese momento llegue muy pronto.</p>
+                    `
+                },
+                {
+                    content: `
+                        <div class="heartfelt">
+                            <p>Hay tantas cosas que quisiera decirte, tantos sentimientos que han crecido en silencio, alimentados por cada sonrisa, cada mirada y cada palabra tuya que ha quedado grabada en mi memoria.</p>
+                        </div>
+                    `
+                },
+                {
+                    content: `
+                        <p>Hoy deseo compartir contigo una emoción que había esperado por muchísimo tiempo. Antes de hacerlo, quiero recordarte que fuiste un pilar fundamental en mi formación. Tus clases, tus palabras y tus consejos me han acompañado a lo largo del camino, guiándome con sabiduría y paciencia. Siempre estaré profundamente agradecida por ello.</p>
+                    `
+                },
+                {
+                    content: `
+                        <div class="heartfelt">
+                            <p>Pero mi gratitud va más allá de lo académico. Has tocado fibras más profundas de mi ser, despertando emociones que nunca antes había experimentado. Eres esa presencia que ilumina mis días, incluso cuando la distancia nos separa.</p>
+                        </div>
+                    `
+                },
+                {
+                    content: `
+                        <p>Por eso, hoy me gustaría devolverte una parte de esos resultados que sembraste en mí. Tal vez haya muchas titulaciones entre semana, y otros alumnos también celebren los frutos de su esfuerzo; sin embargo, con todo mi corazón deseo que me acompañes el:</p>
+                    `
+                },
+                {
+                    content: `
+                        <div class="invitation-details">
+                            <p class="date-time">18 de noviembre a las 11:00 a.m.</p>
+                            <p class="location">Sala de Titulación, Instituto Tecnológico de Pachuca</p>
+                        </div>
+                    `
+                },
+                {
+                    content: `
+                        <p>Tu presencia sería para mí un honor y un símbolo del cierre de un ciclo que comenzó bajo tu guía, pero también el inicio de algo nuevo que espero con ansias poder explorar contigo.</p>
+                        
+                        <div class="closing">
+                            <p>Con profundo cariño y gratitud,</p>
+                            <p class="signature">Melissa Castañon 🌹</p>
+                        </div>
+                    `
+                }
+            ];
+
+            // Crear las tarjetas
+            cardContents.forEach((content, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                if (index === 0) card.classList.add('active');
+
+                card.innerHTML = `
+                    <div class="card-content">
+                        ${content.content}
+                    </div>
+                `;
+
+                cardsContainer.appendChild(card);
+
+                // Crear puntos de progreso
+                const dot = document.createElement('div');
+                dot.className = 'dot';
+                if (index === 0) dot.classList.add('active');
+
+                // Permitir navegación haciendo clic en los puntos
+                dot.addEventListener('click', () => {
+                    goToCard(index);
+                });
+
+                progressDots.appendChild(dot);
+            });
+
+            const cards = document.querySelectorAll('.card');
+            const dots = document.querySelectorAll('.dot');
+
+            // Abrir libro al hacer clic
+            book.addEventListener('click', function (e) {
+                // Solo abrir/cerrar el libro si se hace clic en la portada
+                if (!this.classList.contains('opened') && e.target.closest('.cover')) {
+                    this.classList.add('opened');
+                    createHearts();
+                    startColorTransition();
+                }
+            });
+
+            // Navegación entre tarjetas
+            nextBtn.addEventListener('click', showNextCard);
+            prevBtn.addEventListener('click', showPrevCard);
+
+            function showNextCard() {
+                if (currentCardIndex < cards.length - 1) {
+                    goToCard(currentCardIndex + 1);
+                }
+            }
+
+            function showPrevCard() {
+                if (currentCardIndex > 0) {
+                    goToCard(currentCardIndex - 1);
+                }
+            }
+
+            function goToCard(index) {
+                // Remover clase activa de la tarjeta actual
+                cards[currentCardIndex].classList.remove('active');
+                dots[currentCardIndex].classList.remove('active');
+
+                // Actualizar índice
+                currentCardIndex = index;
+
+                // Aplicar clase activa a la nueva tarjeta
+                cards[currentCardIndex].classList.add('active');
+                dots[currentCardIndex].classList.add('active');
+
+                updateNavigationButtons();
+            }
+
+            function updateNavigationButtons() {
+                prevBtn.disabled = currentCardIndex === 0;
+                nextBtn.disabled = currentCardIndex === cards.length - 1;
+            }
+
+            // Crear corazones flotantes
+            function createHearts() {
+                // Limpiar corazones existentes
+                heartsContainer.innerHTML = '';
+
+                // Crear nuevos corazones
+                for (let i = 0; i < 15; i++) {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart';
+                    heart.innerHTML = '❤';
+                    heart.style.left = Math.random() * 100 + '%';
+                    heart.style.animationDelay = Math.random() * 5 + 's';
+                    heart.style.fontSize = (Math.random() * 1 + 1) + 'rem';
+
+                    heartsContainer.appendChild(heart);
+                }
+            }
+
+            // Inicializar botones de navegación
+            updateNavigationButtons();
+
+            // Inicializar capas de fondo
+            bgLayer1.style.background = `linear-gradient(135deg, ${colorPalette[0].start} 0%, ${colorPalette[0].end} 100%)`;
+        });
+    </script>
+</body>
+
+</html>
